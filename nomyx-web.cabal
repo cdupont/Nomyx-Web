@@ -1,4 +1,4 @@
-name: Nomyx-Web
+name: nomyx-web
 version: 0.1.0
 cabal-version: >=1.6
 build-type: Simple
@@ -17,12 +17,12 @@ data-dir: data
 extra-source-files: README.md
 
 library
-    build-depends: Nomyx-Language         == 1.0.*,
-                   Nomyx-Core             == 1.0.*,
-                   Nomyx-Auth             == 1.0.*,
+    build-depends: nomyx-language         == 1.0.*,
+                   nomyx-core             == 1.0.*,
+                   nomyx-auth             == 1.0.*,
                    HTTP,
-                   Imprevu                == 0.1.0,
-                   Imprevu-Happstack      == 0.1.0,
+                   imprevu                == 0.1.0,
+                   imprevu-happstack      == 0.1.0,
                    acid-state             >= 0.12 && < 0.15,
                    base                   >= 4.6 && < 5,
                    blaze-html             >= 0.7 && < 0.9,
