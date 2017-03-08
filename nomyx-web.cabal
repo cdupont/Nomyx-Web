@@ -1,5 +1,5 @@
 name: nomyx-web
-version: 0.1.0
+version: 1.0.0
 cabal-version: >=1.6
 build-type: Simple
 license: BSD3
@@ -69,4 +69,4 @@ library
 
 source-repository head
   type:              git
-  location:          https://github.com/cdupont/Nomyx.git
+  location:          https://github.com/cdupont/nomyx-web.git
