@@ -43,7 +43,7 @@ import           Nomyx.Web.NewGame
 import           Nomyx.Web.Settings
 import           Nomyx.Web.Types
 import qualified Nomyx.Auth                            as Auth
-import           Paths_Nomyx_Language
+import           Paths_nomyx_language
 import           Prelude                               hiding (div)
 import           Safe
 import           System.FilePath
@@ -211,7 +211,6 @@ launchWebServer tv net = do
 --serving Nomyx web page as well as data from this package and the language library package
 server :: WebSession -> Settings -> Network -> String -> ServerPartT IO Response
 server ws set net docdir = mconcat [
-    guardRq isAppCache >> serveFile (asContentType "text/cache-manifest") (_webDir set </> "nomyx.appcache"),
     serveDirectory EnableBrowsing [] (_saveDir set),
     serveDirectory EnableBrowsing [] docdir,
     serveDirectory EnableBrowsing [] (_webDir set),
@@ -232,6 +231,3 @@ getDocDir = do
    let (as, _:bs) = break (== "share") $ splitDirectories datadir
    return $ joinPath $ as ++ ["share", "doc"] ++ bs
 
-
-isAppCache :: Request -> Bool
-isAppCache r = last (rqPaths r) == "nomyx.appcache"
