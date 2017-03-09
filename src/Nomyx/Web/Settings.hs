@@ -17,7 +17,7 @@ import           Nomyx.Core.Utils
 import           Nomyx.Web.Common
 import           Nomyx.Web.Help              as Help
 import           Nomyx.Web.Types
-import           Paths_Nomyx_Web             as PNW
+import           Paths_nomyx_web             as PNW
 import           Prelude                     hiding (div)
 import           Safe
 import           System.FilePath

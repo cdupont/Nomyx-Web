@@ -52,7 +52,7 @@ library
     extensions: CPP
     hs-source-dirs: src
     exposed-modules:Nomyx.Web.MainPage
-                    Paths_Nomyx_Web
+                    Paths_nomyx_web
     other-modules: Nomyx.Web.Common
                    Nomyx.Web.Help
                    Nomyx.Web.Game.Infos
