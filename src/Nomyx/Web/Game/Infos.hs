@@ -44,7 +44,7 @@ viewGameDesc g mpn playAs gameAdmin = do
       when (isJust playAs) $ h4 $ fromString $ "You are playing as player " ++ (show $ fromJust playAs)
       p $ pre $ fromString (_desc $ _gameDesc g)
       p $ h4 $ "This game is discussed in the " >> a "Forum" ! (A.href $ toValue (_forumURL $ _gameDesc g)) >> "."
-      p $ h4 "Players in game:"
+      p $ h4 "Players in game (with their player number):"
       when gameAdmin "(click on a player name to \"play as\" this player)"
       vp
       p $ viewVictory g
