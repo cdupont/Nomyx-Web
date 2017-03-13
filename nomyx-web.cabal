@@ -10,7 +10,11 @@ category: game
 Homepage: http://www.nomyx.net
 author: Corentin Dupont
 data-files: static/css/nomyx.css
-            static/nomyx.js
+            static/js/nomyx.js
+            static/js/angular.min.js
+            static/js/angular-route.min.js
+            static/js/bootstrap.min.js
+            static/js/jquery.min.js
             static/pictures/*.jpg
             static/pictures/*.png
 data-dir: data
@@ -65,7 +69,7 @@ library
                    Nomyx.Web.Settings
                    Nomyx.Web.NewGame
                    Nomyx.Web.Types
-    ghc-options: -W -threaded
+    ghc-options: -W
 
 source-repository head
   type:              git

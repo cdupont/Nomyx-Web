@@ -75,19 +75,6 @@ blazeForm html link =
             do html
                input ! A.type_ "submit" ! A.value "Submit"
 
--- | Create a group of radio elements without BR between elements
-inputRadio' :: (Functor m, Monad m, FormError error, ErrorInputType error ~ input, FormInput input, ToMarkup lbl) =>
-              [(a, lbl)]  -- ^ value, label, initially checked
-           -> (a -> Bool) -- ^ isDefault
-           -> Form m input error Html () a
-inputRadio' choices isDefault =
-   G.inputChoice isDefault choices mkRadios
-   where
-      mkRadios nm choices' = mconcat $ concatMap (mkRadio nm) choices'
-      mkRadio nm (i, val, lbl, checked) =
-         [ (if checked then (! A.checked "checked") else id) $ input ! A.type_ "radio" ! A.id (toValue i) ! A.name (toValue nm) ! A.value (toValue val)
-         , " ", H.label ! A.for (toValue i) $ toHtml lbl]
-
 mainPage' :: String -> Html -> Bool -> Html -> RoutedNomyxServer Response
 mainPage' title header footer body = do
    html <- mainPage title header body footer False
@@ -111,16 +98,15 @@ pageTemplate title headers body footer routeFn = do
    H.head $ do
       H.title (fromString title)
       H.link ! rel "stylesheet" ! type_ "text/css" ! href "/static/css/nomyx.css"
-      --H.link ! rel "stylesheet" ! type_ "text/css" ! href "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"
-      H.meta ! A.httpEquiv "Content-Type" ! content "text/html;charset=utf-8"
-      H.meta ! A.name "keywords" ! A.content "Nomyx, game, rules, Haskell, auto-reference"
-      H.script ! A.type_ "text/JavaScript" ! A.src "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" $ ""
-      H.script ! A.type_ "text/JavaScript" ! A.src "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js" $ ""
-      H.script ! A.type_ "text/JavaScript" ! A.src "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.min.js" $ ""
-      H.script ! A.type_ "text/JavaScript" ! A.src "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-route.min.js" $ ""
-      H.script ! A.type_ "text/JavaScript" ! A.src "/static/nomyx.js" $ ""
+      H.script ! A.type_ "text/JavaScript" ! A.src "/static/js/jquery.min.js" $ ""
+      H.script ! A.type_ "text/JavaScript" ! A.src "/static/js/bootstrap.min.js" $ ""
+      H.script ! A.type_ "text/JavaScript" ! A.src "/static/js/angular.min.js" $ ""
+      H.script ! A.type_ "text/JavaScript" ! A.src "/static/js/angular-route.min.js" $ ""
+      H.script ! A.type_ "text/JavaScript" ! A.src "/static/js/nomyx.js" $ ""
       H.script ! A.type_ "text/JavaScript" ! A.src (textValue $ routeFn NomyxJS []) $ ""
       H.script ! A.type_ "text/JavaScript" ! A.src (textValue $ routeFn (Auth Controllers) []) $ ""
+      H.meta ! A.httpEquiv "Content-Type" ! content "text/html;charset=utf-8"
+      H.meta ! A.name "keywords" ! A.content "Nomyx, game, rules, Haskell, auto-reference"
    H.body ! onload "loadDivVisibility()"  ! customAttribute "ng-controller" "AuthenticationCtrl" ! customAttribute "ng-app" "NomyxApp" $ H.div ! A.id "container" $ do
       H.div ! A.id "header" $ headers
       body ! A.id "multi" 
