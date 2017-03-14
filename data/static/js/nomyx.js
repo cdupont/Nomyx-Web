@@ -1,43 +1,3 @@
-function toggle_visibility(id_events, id_show)
-{
-   var events = document.getElementById(id_events);
-   var show = document.getElementById(id_show);
-   if (show.innerHTML == 'Click to show')
-   {
-      events.style.display = 'block';
-      show.innerHTML = 'Click to hide';
-   }
-   else
-   {
-      events.style.display = 'none';
-      show.innerHTML ='Click to show';
-   }
-}
-
-//toggle visibility for overlapping divs
-//all elements with the class name will be pushed back,
-//while only the element with the id name is put on front
-function toggleVisibilityGroup(elementId, groupClass)
-{
-   var elems = document.getElementsByClassName(groupClass);
-   for (i = 0; i < elems.length; i++) {
-      elems[i].style.display = 'none';
-   }
-
-   var elem = document.getElementById(elementId);
-   elem.style.display = 'inline';
-}
-
-function toggleBoldGroup(elementId, groupClass)
-{
-   var elems = document.getElementsByClassName(groupClass);
-   for (i = 0; i < elems.length; i++) {
-      elems[i].style.fontWeight = 'normal';
-   }
-
-   var elem = document.getElementById(elementId);
-   elem.style.fontWeight = 'bold';
-}
 
 
 function setDivVisibilityAndSave(groupName, elementName) {
@@ -129,5 +89,13 @@ function ruleQuery() {
 
 function moduleQuery() {
     var modulePath = getQueryVariable("modulePath");
+    var isModuleEdit = getQueryVariable("edit");
+    
     $('[id="' + modulePath + '"]').css('display', 'block');
+    
+    if (isModuleEdit) {
+       $('[id="' + modulePath + '"] .editModule').css('display', 'block');
+    } else {
+       $('[id="' + modulePath + '"] .viewModule').css('display', 'block');
+    }
 }

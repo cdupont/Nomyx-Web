@@ -188,6 +188,8 @@ routedNomyxCommands (SubmitRule game)    = submitRuleTemplatePost game
 -- Templates
 routedNomyxCommands (NewRuleTemplate game)    = newRuleTemplate game
 routedNomyxCommands (DelRuleTemplate game rn) = delRuleTemplate game rn
+-- Modules
+routedNomyxCommands (NewModule game)     = newModule game
 --Settings
 routedNomyxCommands Advanced             = advanced
 routedNomyxCommands (SubmitPlayAs game)  = newPlayAs         game

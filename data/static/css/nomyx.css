@@ -194,6 +194,26 @@ h3{
    display: none;
 }
 
+.commandModule {
+   text-align: right;
+}
+
+.viewModule {
+   display: none;
+   position: absolute;
+   top: 20px;
+   left: 15px;
+   width: 94%;
+}
+
+.editModule {
+   display:none;
+   position: absolute;
+   top: 35px;
+   width: 94%;
+}
+
+
 /* Code */
 
 .codeDiv {

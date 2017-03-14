@@ -172,27 +172,10 @@ viewRuleTemplateEdit lr gn = do
 newRuleTemplateForm :: Maybe RuleTemplate -> Bool -> NomyxForm (RuleTemplate, Maybe String)
 newRuleTemplateForm sr isGameAdmin = newRuleTemplateForm' (fromMaybe (RuleTemplate "" "" "" "" Nothing [] []) sr) isGameAdmin
 
---newRuleTemplateForm' :: RuleTemplate -> Bool -> NomyxForm (RuleTemplate, Maybe String)
---newRuleTemplateForm' rt isGameAdmin = do
---  rt <- newRuleTemplateForm'' rt
---  chk <- inputSubmit "Check"
---  return (rt, chk)
-
 newRuleTemplateForm' :: RuleTemplate -> Bool -> NomyxForm (RuleTemplate, Maybe String)
 newRuleTemplateForm' rt isGameAdmin =
   (,) <$> newRuleTemplateForm'' rt
       <*> inputSubmit "Check"
-
---newRuleTemplateForm'' :: RuleTemplate -> NomyxForm RuleTemplate
---newRuleTemplateForm'' rt@(RuleTemplate name desc code aut pic cat decls) = do
---  name'  <-  RB.label "Name: " ++> RB.inputText name `setAttr` class_ "ruleName"
---  desc'  <- (RB.label "      Short description: " ++> (RB.inputText desc `setAttr` class_ "ruleDescr") <++ RB.br)
---  code'  <-  RB.label "      Code: " ++> textarea 80 15 code `setAttr` class_ "ruleCode" `setAttr` placeholder "Enter here your rule"
---  aut'   <-  (inputHidden aut)
---  pic'   <-  (read <$> (inputHidden $ show pic))
---  cat'   <-  (read <$> (inputHidden $ show cat))
---  decls' <-  (read <$> (inputHidden $ show decls))
---  return (RuleTemplate name' desc' code' aut' pic' cat' decls')
 
 newRuleTemplateForm'' :: RuleTemplate -> NomyxForm RuleTemplate
 newRuleTemplateForm'' (RuleTemplate name desc code aut pic cat decls) =
