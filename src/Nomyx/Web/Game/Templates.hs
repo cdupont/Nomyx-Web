@@ -179,7 +179,7 @@ newRuleTemplateForm' rt isGameAdmin =
 
 newRuleTemplateForm'' :: RuleTemplate -> NomyxForm RuleTemplate
 newRuleTemplateForm'' (RuleTemplate name desc code aut pic cat decls) =
-  RuleTemplate <$>  RB.label "Name: " ++> RB.inputText name `setAttr` class_ "ruleName"
+  RuleTemplate <$>  RB.label "Name: " ++> RB.inputText name `setAttr` class_ "ruleName" <++ RB.br
                <*> (RB.label "      Short description: " ++> (RB.inputText desc `setAttr` class_ "ruleDescr") <++ RB.br)
                <*>  RB.label "      Code: " ++> textarea 80 15 code `setAttr` class_ "ruleCode" `setAttr` placeholder "Enter here your rule"
                <*>  (inputHidden aut)

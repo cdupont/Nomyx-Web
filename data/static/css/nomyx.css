@@ -133,6 +133,9 @@ h3{
 
 .editrule {
    display:none;
+   position: absolute;
+   top: 20px;
+   width: 94%;
 }
 
 .module {
