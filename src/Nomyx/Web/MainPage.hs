@@ -140,7 +140,8 @@ nomyxPage mgn tab = do
    name <- case mpn of
       Just pn -> liftIO $ Profile.getPlayerName pn s
       Nothing -> return "Guest"
-   let gn = maybe (_gameName $ _game $ _loggedGame $ head $ _gameInfos $ _multi s) id mgn
+   let firstPublicGame = _gameName $ _game $ _loggedGame $ head $ filter ((== True) . _isPublic) (_gameInfos $ _multi s)
+   let gn = maybe firstPublicGame id mgn
    m <- viewMulti mpn saveDir tab gn s
    title <- titleBar name gn
    mainPage' "Nomyx: the game where you can change the rules"
