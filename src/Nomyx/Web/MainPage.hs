@@ -73,7 +73,7 @@ viewMulti mpn saveDir gt gn s = do
          let lib = _pLibrary $ fromJustNote "viewMulti" pfd
          return (isAdmin, lr, lib)
       Nothing -> return (False, Nothing, _mLibrary $ _multi s)
-   let gi = fromJust $ getGameByName gn s  --TODO fix
+   let gi = fromJustNote "game not found" $ getGameByName gn s  --TODO fix
    gns <- viewGamesTab gi isAdmin saveDir mpn
    vg <- viewGameInfo gi mpn lr isAdmin gt lib 
    ok $ do
@@ -101,8 +101,9 @@ viewGameInfo gi mpn mlr isAdmin gt lib = do
    let isGameAdmin = isAdmin || maybe False (== mpn) (Just $ _ownedBy gi)
    let playAs = mpn >> maybe Nothing _playingAs pi
    let pn = fromMaybe 0 mpn
-   vrf <- viewLibrary lib mlr gn isGameAdmin
-   vms <- viewModules lib mlr gn isGameAdmin
+   let isInGame = maybe False (\pn -> pn `elem` (_playerNumber <$> _players g)) mpn
+   vrf <- viewLibrary lib mlr gn isGameAdmin isInGame
+   vms <- viewModules lib mlr gn isGameAdmin isInGame
    vios <- viewIOs (fromMaybe pn playAs) g
    vgd <- viewGameDesc g mpn playAs isGameAdmin
    vrs <- viewAllRules pn g

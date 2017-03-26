@@ -48,17 +48,17 @@ default (Integer, Double, Data.Text.Text)
 
 -- * Library display
 
-viewModules :: Library -> Maybe LastRule -> GameName -> Bool -> RoutedNomyxServer Html
-viewModules (Library rts ms) mlr gn isGameAdmin = do
-  ms <- mapM (viewPaneModule gn mlr isGameAdmin) ms
+viewModules :: Library -> Maybe LastRule -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
+viewModules (Library rts ms) mlr gn isGameAdmin isInGame = do
+  ms <- mapM (viewPaneModule gn mlr isGameAdmin isInGame) ms
   ok $ do
     div ! class_ "modules" $ sequence_ ms
 
-viewPaneModule :: GameName -> Maybe LastRule -> Bool -> ModuleInfo -> RoutedNomyxServer Html
-viewPaneModule gn mlr isGameAdmin modi = do
+viewPaneModule :: GameName -> Maybe LastRule -> Bool -> Bool -> ModuleInfo -> RoutedNomyxServer Html
+viewPaneModule gn mlr isGameAdmin isInGame modi = do
   com <- moduleCommands gn modi
-  view <- viewModule gn modi isGameAdmin
-  edit <- viewModuleEdit gn modi
+  view <- viewModule gn modi
+  edit <- viewModuleEdit gn isInGame modi
   ok $ div ! A.class_ "module" ! A.id (toValue $ idEncode $ _modPath modi) $ do
     com
     view
@@ -75,19 +75,19 @@ moduleCommands gn (ModuleInfo path _) = do
 
 -- ** Module view
 
-viewModule :: GameName -> ModuleInfo -> Bool -> RoutedNomyxServer Html
-viewModule gn (ModuleInfo path mod) isGameAdmin = do
+viewModule :: GameName -> ModuleInfo -> RoutedNomyxServer Html
+viewModule gn (ModuleInfo path mod) = do
   ok $ div ! A.class_ "viewModule" $ do
     div $ displayCode $ unpack mod
     
 -- * Module edit
 
 -- Edit a template
-viewModuleEdit :: GameName -> ModuleInfo -> RoutedNomyxServer Html
-viewModuleEdit gn modi = do
+viewModuleEdit :: GameName -> Bool -> ModuleInfo -> RoutedNomyxServer Html
+viewModuleEdit gn isInGame modi = do
   lf  <- liftRouteT $ lift $ viewForm "user" (newModuleForm modi)
   ok $ div ! A.class_ "editModule" $ do
-    blazeForm lf $ showRelURL $ NewModule gn
+    blazeForm lf $ defLink (NewModule gn) isInGame
 
 newModuleForm :: ModuleInfo -> NomyxForm ModuleInfo
 newModuleForm (ModuleInfo path cont) =
