@@ -217,6 +217,14 @@ h3{
 }
 
 
+/* Login */
+
+.ng-binding {
+   font-weight: bold;
+   color: red;
+}
+
+
 /* Code */
 
 .codeDiv {
