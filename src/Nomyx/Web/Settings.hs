@@ -38,15 +38,14 @@ advanced = toResponse <$> do
    session <- getSession
    pfds <- liftIO $ getAllProfiles session
    let prof = fromJustNote "advanced" pfd
-   page <- advancedPage (_pLastUpload prof)
-                        (_pIsAdmin prof)
+   page <- advancedPage (_pIsAdmin prof)
                         (_mSettings $ _multi session)
                         pfds
    mainPage "Advanced" "Advanced" page False True
 
 
-advancedPage :: LastUpload -> Bool -> Settings -> [ProfileData] -> RoutedNomyxServer Html
-advancedPage mlu isAdmin settings pfds = do
+advancedPage :: Bool -> Settings -> [ProfileData] -> RoutedNomyxServer Html
+advancedPage isAdmin settings pfds = do
    let sendMail = _sendMails $ _mailSettings settings
    ap  <- liftRouteT $ lift $ viewForm "user" adminPassForm
    set <- liftRouteT $ lift $ viewForm "user" $ settingsForm sendMail 
@@ -82,22 +81,18 @@ advancedPage mlu isAdmin settings pfds = do
                   td ! A.class_ "td" $ "Name"
                   td ! A.class_ "td" $ "mail"
                   td ! A.class_ "td" $ "send mails"
-                  td ! A.class_ "td" $ "last rule"
-                  td ! A.class_ "td" $ "last upload"
                   td ! A.class_ "td" $ "is admin"
                   td ! A.class_ "td" $ "play as"
                mapM_ viewProfile pfds
 
 
 viewProfile :: ProfileData -> Html
-viewProfile (ProfileData pn (Types.PlayerSettings playerName mail _ mailSubmitRule _ _) lastRule lastUpload isAdmin _) =
+viewProfile (ProfileData pn (Types.PlayerSettings playerName mail _ mailSubmitRule _ _) isAdmin _) =
    tr $ do
       td ! A.class_ "td" $ fromString $ show pn
       td ! A.class_ "td" $ fromString playerName
       td ! A.class_ "td" $ fromString $ show mail
       td ! A.class_ "td" $ fromString $ show mailSubmitRule
-      td ! A.class_ "td" $ fromString $ show lastRule
-      td ! A.class_ "td" $ fromString $ show lastUpload
       td ! A.class_ "td" $ fromString $ show isAdmin
 
 

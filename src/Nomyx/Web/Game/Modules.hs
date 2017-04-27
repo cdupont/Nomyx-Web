@@ -48,14 +48,14 @@ default (Integer, Double, Data.Text.Text)
 
 -- * Library display
 
-viewModules :: Library -> Maybe LastRule -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
-viewModules (Library rts ms) mlr gn isGameAdmin isInGame = do
-  ms <- mapM (viewPaneModule gn mlr isGameAdmin isInGame) ms
+viewModules :: Library -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
+viewModules (Library rts ms) gn isGameAdmin isInGame = do
+  ms <- mapM (viewPaneModule gn isGameAdmin isInGame) ms
   ok $ do
     div ! class_ "modules" $ sequence_ ms
 
-viewPaneModule :: GameName -> Maybe LastRule -> Bool -> Bool -> ModuleInfo -> RoutedNomyxServer Html
-viewPaneModule gn mlr isGameAdmin isInGame modi = do
+viewPaneModule :: GameName -> Bool -> Bool -> ModuleInfo -> RoutedNomyxServer Html
+viewPaneModule gn isGameAdmin isInGame modi = do
   com <- moduleCommands gn modi
   view <- viewModule gn modi
   edit <- viewModuleEdit gn isInGame modi

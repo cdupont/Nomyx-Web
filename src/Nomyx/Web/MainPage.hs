@@ -65,17 +65,16 @@ default (Integer, Double, T.Text)
 
 viewMulti :: (Maybe PlayerNumber) -> FilePath -> GameTab -> GameName -> Session -> RoutedNomyxServer Html
 viewMulti mpn saveDir gt gn s = do
-   (isAdmin, lr, lib) <- case mpn of
+   (isAdmin, lib) <- case mpn of
       Just pn -> do
          pfd <- getProfile s pn
          let isAdmin = _pIsAdmin $ fromJustNote "viewMulti" pfd
-         let lr = _pLastRule $ fromJustNote "viewMulti" pfd
          let lib = _pLibrary $ fromJustNote "viewMulti" pfd
-         return (isAdmin, lr, lib)
-      Nothing -> return (False, Nothing, _mLibrary $ _multi s)
+         return (isAdmin, lib)
+      Nothing -> return (False, _mLibrary $ _multi s)
    let gi = fromJustNote "game not found" $ getGameByName gn s  --TODO fix
    gns <- viewGamesTab gi isAdmin saveDir mpn
-   vg <- viewGameInfo gi mpn lr isAdmin gt lib 
+   vg <- viewGameInfo gi mpn isAdmin gt lib 
    ok $ do
       div ! A.id "gameList" $ gns
       vg
@@ -93,8 +92,8 @@ viewGamesTab gi isAdmin saveDir mpn = do
      -- br >> b "Help files:" >> br
      -- H.a "Nomyx language"    ! (href "/html/Language-Nomyx.html") ! target "_blank" >> br
 
-viewGameInfo :: GameInfo -> (Maybe PlayerNumber) -> Maybe LastRule -> Bool -> GameTab -> Library -> RoutedNomyxServer Html
-viewGameInfo gi mpn mlr isAdmin gt lib = do
+viewGameInfo :: GameInfo -> (Maybe PlayerNumber) -> Bool -> GameTab -> Library -> RoutedNomyxServer Html
+viewGameInfo gi mpn isAdmin gt lib = do
    let g = getGame gi
    let gn = _gameName g
    let pi = join $ (Profile.getPlayerInfo g) <$> mpn
@@ -102,8 +101,8 @@ viewGameInfo gi mpn mlr isAdmin gt lib = do
    let playAs = mpn >> maybe Nothing _playingAs pi
    let pn = fromMaybe 0 mpn
    let isInGame = maybe False (\pn -> pn `elem` (_playerNumber <$> _players g)) mpn
-   vrf <- viewLibrary lib mlr gn isGameAdmin isInGame
-   vms <- viewModules lib mlr gn isGameAdmin isInGame
+   vrf <- viewLibrary lib gn isGameAdmin isInGame
+   vms <- viewModules lib gn isGameAdmin isInGame
    vios <- viewIOs (fromMaybe pn playAs) g
    vgd <- viewGameDesc g mpn playAs isGameAdmin
    vrs <- viewAllRules pn g

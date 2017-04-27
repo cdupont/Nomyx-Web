@@ -49,50 +49,47 @@ default (Integer, Double, Data.Text.Text)
 
 -- * Library display
 
-viewLibrary :: Library -> Maybe LastRule -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
-viewLibrary (Library rts ms) mlr gn isGameAdmin isInGame = do
-  vrs <- mapM (viewPaneRuleTemplate gn mlr isGameAdmin isInGame) rts
+viewLibrary :: Library -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
+viewLibrary (Library rts ms) gn isGameAdmin isInGame = do
+  vrs <- mapM (viewPaneRuleTemplate gn isGameAdmin isInGame) rts
   ok $ do
-    div ! class_ "ruleList" $ viewRuleTemplateCats rts mlr
+    div ! class_ "ruleList" $ viewRuleTemplateCats rts
     div ! class_ "rules" $ sequence_ vrs
 
 -- * left menu display
 
-viewRuleTemplateCats :: [RuleTemplate] -> Maybe LastRule -> Html
-viewRuleTemplateCats rts mlr = do
-  let cat = (headDef "Not category" . _rCategory)
+viewRuleTemplateCats :: [RuleTemplateInfo] -> Html
+viewRuleTemplateCats rts = do
+  let cat = (headDef "Not category" . _rCategory . _iRuleTemplate)
   let rts' = groupBy ((==) `on` cat) $ sortBy (comparing cat) rts
   h2 "Library of rules"
   ul $ mapM_  viewRuleTemplateCat rts'
 
-viewRuleTemplateCat :: [RuleTemplate] -> Html
+viewRuleTemplateCat :: [RuleTemplateInfo] -> Html
 viewRuleTemplateCat rts = li $ do
-   fromString $ headDef "No category" $ _rCategory $ head rts
+   fromString $ headDef "No category" $ _rCategory $ _iRuleTemplate $ head rts
    ul $ mapM_  viewRuleTemplateName rts
 
-viewRuleTemplateName :: RuleTemplate -> Html
-viewRuleTemplateName rt = li $ H.a (fromString $ _rName rt) ! A.class_ "ruleName" ! (A.href $ toValue $ "?ruleName=" ++ (idEncode $ _rName rt))
+viewRuleTemplateName :: RuleTemplateInfo -> Html
+viewRuleTemplateName (RuleTemplateInfo rt _) = li $ H.a (fromString $ _rName rt) ! A.class_ "ruleName" ! (A.href $ toValue $ "?ruleName=" ++ (idEncode $ _rName rt))
 
 
 -- * main tab display
 
-viewPaneRuleTemplate :: GameName -> Maybe LastRule -> Bool -> Bool -> RuleTemplate -> RoutedNomyxServer Html
-viewPaneRuleTemplate gn mlr isGameAdmin isInGame rt = do
-  let toEdit = case mlr of
-       Nothing -> (rt, "")
-       Just lr -> if ((_rName $ fst lr) == (_rName rt)) then lr else (rt, "")
-  com <- templateCommands gn rt
-  view <- viewRuleTemplate gn toEdit isGameAdmin isInGame
-  edit <- viewRuleTemplateEdit toEdit gn isInGame
-  ok $ div ! A.class_ "rule" ! A.id (toValue $ idEncode $ _rName rt) $ do
+viewPaneRuleTemplate :: GameName -> Bool -> Bool -> RuleTemplateInfo -> RoutedNomyxServer Html
+viewPaneRuleTemplate gn isGameAdmin isInGame rti = do
+  com  <- templateCommands     gn rti
+  view <- viewRuleTemplate     gn rti isGameAdmin isInGame
+  edit <- viewRuleTemplateEdit gn rti isInGame
+  ok $ div ! A.class_ "rule" ! A.id (toValue $ idEncode $ _rName $ _iRuleTemplate rti) $ do
     com
     view
     edit
 
 -- ** Template commands
 
-templateCommands :: GameName -> RuleTemplate -> RoutedNomyxServer Html
-templateCommands gn rt = do
+templateCommands :: GameName -> RuleTemplateInfo -> RoutedNomyxServer Html
+templateCommands gn (RuleTemplateInfo rt _) = do
   let delLink = showRelURL (DelRuleTemplate gn (_rName rt))
   let idrt = idEncode $ _rName rt
   ok $ div ! A.class_ "commandrule" $ do
@@ -108,8 +105,8 @@ delRuleTemplate gn rn = do
   seeOther (showRelURL $ Menu Lib gn) $ toResponse "Redirecting..."
 
 
-viewRuleTemplate :: GameName -> LastRule -> Bool -> Bool -> RoutedNomyxServer Html
-viewRuleTemplate gn (rt@(RuleTemplate name desc code author picture _ decls), err) isGameAdmin isInGame = do
+viewRuleTemplate :: GameName -> RuleTemplateInfo -> Bool -> Bool -> RoutedNomyxServer Html
+viewRuleTemplate gn (RuleTemplateInfo rt@(RuleTemplate name desc code author picture _ decls) err) isGameAdmin isInGame = do
   lf  <- liftRouteT $ lift $ viewForm "user" (submitRuleTemplatForm (Just rt) isGameAdmin)
   ok $ div ! A.class_ "viewrule" $ do
     viewRuleHead name picture desc author
@@ -157,12 +154,12 @@ submitRuleTemplatePost gn = toResponse <$> do
 -- * Template edit
 
 -- Edit a template
-viewRuleTemplateEdit :: LastRule -> GameName -> Bool -> RoutedNomyxServer Html
-viewRuleTemplateEdit lr gn isInGame = do
-  lf  <- liftRouteT $ lift $ viewForm "user" (newRuleTemplateForm (Just $ fst lr) True)
+viewRuleTemplateEdit :: GameName -> RuleTemplateInfo -> Bool -> RoutedNomyxServer Html
+viewRuleTemplateEdit gn (RuleTemplateInfo rt msg) isInGame = do
+  lf  <- liftRouteT $ lift $ viewForm "user" (newRuleTemplateForm (Just rt) True)
   ok $ div ! A.class_ "editRule" $ do
     blazeForm lf $ defLink (NewRuleTemplate gn) isInGame
-    pre $ fromString $ snd lr
+    pre $ fromString msg
 
 newRuleTemplateForm :: Maybe RuleTemplate -> Bool -> NomyxForm (RuleTemplate, Maybe String)
 newRuleTemplateForm sr isGameAdmin = newRuleTemplateForm' (fromMaybe (RuleTemplate "" "" "" "" Nothing [] []) sr) isGameAdmin
