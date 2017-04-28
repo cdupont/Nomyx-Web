@@ -73,7 +73,7 @@ modalJoin :: GameName -> Bool -> Html
 modalJoin gn logged = modalWindow
    (defLink (JoinGame gn) logged)
    "Join"
-   "Joining the game. Please register in the forum (see the link) and introduce yourself to the other players! If you do not whish to play, you can just view the game."
+   "Joining the game. Please register in the forum (see the link) and introduce yourself to the other players! If you do not wish to play, you can just view the game."
    ("openModalJoin" ++ gn)
 
 modalDel :: GameName -> Bool -> Html
