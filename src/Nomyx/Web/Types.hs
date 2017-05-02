@@ -32,7 +32,10 @@ import           Imprevu.Evaluation.InputEval
 
 default (Integer, Double, Data.Text.Text)
 
-data GameTab = Home | Rules | Actions | Lib | Modules | Details
+data GameTab = Home | Rules | Actions | Details
+   deriving (Show)
+
+data LibTab = Lib | Modules
    deriving (Show)
 
 data PlayerCommand =
@@ -45,7 +48,8 @@ data PlayerCommand =
   | OpenIdRealm
   | PostAuth
   -- Game menu
-  | Menu GameTab GameName
+  | GameMenu GameTab GameName
+  | LibMenu LibTab PlayerNumber
   | MainPage
   -- Game management
   | JoinGame  GameName
@@ -93,6 +97,7 @@ instance PathInfo (Int, String)
 instance PathInfo [(Int, String)]
 
 $(derivePathInfo ''GameTab)
+$(derivePathInfo ''LibTab)
 $(derivePathInfo ''PlayerCommand)
 
 instance PathInfo Bool where

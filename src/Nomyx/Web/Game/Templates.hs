@@ -49,9 +49,9 @@ default (Integer, Double, Data.Text.Text)
 
 -- * Library display
 
-viewLibrary :: Library -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
-viewLibrary (Library rts ms) gn isGameAdmin isInGame = do
-  vrs <- mapM (viewPaneRuleTemplate gn isGameAdmin isInGame) rts
+viewLibrary :: Library -> PlayerNumber -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
+viewLibrary (Library rts ms) pn gn isGameAdmin isInGame = do
+  vrs <- mapM (viewPaneRuleTemplate pn gn isGameAdmin isInGame) rts
   ok $ do
     div ! class_ "ruleList" $ viewRuleTemplateCats rts
     div ! class_ "rules" $ sequence_ vrs
@@ -76,10 +76,10 @@ viewRuleTemplateName (RuleTemplateInfo rt _) = li $ H.a (fromString $ _rName rt)
 
 -- * main tab display
 
-viewPaneRuleTemplate :: GameName -> Bool -> Bool -> RuleTemplateInfo -> RoutedNomyxServer Html
-viewPaneRuleTemplate gn isGameAdmin isInGame rti = do
+viewPaneRuleTemplate :: PlayerNumber -> GameName -> Bool -> Bool -> RuleTemplateInfo -> RoutedNomyxServer Html
+viewPaneRuleTemplate pn gn isGameAdmin isInGame rti = do
   com  <- templateCommands     gn rti
-  view <- viewRuleTemplate     gn rti isGameAdmin isInGame
+  view <- viewRuleTemplate     pn gn rti isGameAdmin isInGame
   edit <- viewRuleTemplateEdit gn rti isInGame
   ok $ div ! A.class_ "rule" ! A.id (toValue $ idEncode $ _rName $ _iRuleTemplate rti) $ do
     com
@@ -98,20 +98,20 @@ templateCommands gn (RuleTemplateInfo rt _) = do
     p $ H.a "delete" ! (A.href $ toValue delLink)
 
 
-delRuleTemplate :: GameName -> RuleName -> RoutedNomyxServer Response
+delRuleTemplate :: Player -> RuleName -> RoutedNomyxServer Response
 delRuleTemplate gn rn = do
   pn <- fromJust <$> getPlayerNumber
   webCommand $ S.delRuleTemplate rn pn
-  seeOther (showRelURL $ Menu Lib gn) $ toResponse "Redirecting..."
+  seeOther (showRelURL $ LibMenu Lib pn) $ toResponse "Redirecting..."
 
 
-viewRuleTemplate :: GameName -> RuleTemplateInfo -> Bool -> Bool -> RoutedNomyxServer Html
-viewRuleTemplate gn (RuleTemplateInfo rt@(RuleTemplate name desc code author picture _ decls) err) isGameAdmin isInGame = do
+viewRuleTemplate :: PlayerNumber -> GameName -> RuleTemplateInfo -> Bool -> Bool -> RoutedNomyxServer Html
+viewRuleTemplate pn (RuleTemplateInfo rt@(RuleTemplate name desc code author picture _ decls) err) isGameAdmin isInGame = do
   lf  <- liftRouteT $ lift $ viewForm "user" (submitRuleTemplatForm (Just rt) isGameAdmin)
   ok $ div ! A.class_ "viewrule" $ do
     viewRuleHead name picture desc author
     viewRuleCode code
-    mapM (viewDecl gn) decls
+    mapM (viewDeclPath pn) decls
     div $ pre $ fromString err
     blazeForm lf $ defLink (SubmitRule gn) isInGame
 
@@ -122,9 +122,9 @@ submitRuleTemplatForm mrt isGameAdmin =
        <*> if isGameAdmin then inputSubmit "Admin submit" else pure Nothing
 
 
-viewDecl :: GameName -> FilePath -> Html
-viewDecl gn modPath = do
-   let link = showRelURLParams (Menu Modules gn) [("modulePath", Just $ pack $ idEncode modPath)]
+viewDeclPath :: PlayerNumber -> FilePath -> Html
+viewDeclPath pn modPath = do
+   let link = showRelURLParams (LibMenu Modules pn) [("modulePath", Just $ pack $ idEncode modPath)]
    H.a (fromString modPath) ! (A.href $ toValue $ link)
    H.br
 
@@ -148,7 +148,7 @@ submitRuleTemplatePost gn = toResponse <$> do
          webCommand $ adminSubmitRule rt pn gn
          return rt
       (Left _)            -> error "cannot retrieve form data"
-   seeOther (showRelURLParams (Menu Lib gn) [("ruleName", Just $ pack $ idEncode $ _rName rt)]) $ "Redirecting..."
+   seeOther (showRelURLParams (LibMenu pn) [("ruleName", Just $ pack $ idEncode $ _rName rt)]) $ "Redirecting..."
 
 
 -- * Template edit
@@ -187,7 +187,7 @@ newRuleTemplate gn = toResponse <$> do
   case r of
      Right (rt, Nothing) -> do
        webCommand $ S.newRuleTemplate pn rt
-       seeOther (showRelURLParams (Menu Lib gn) [("ruleName", Just $ pack $ idEncode $ _rName rt)]) $ "Redirecting..."
+       seeOther (showRelURLParams (LibMenu Lib pn) [("ruleName", Just $ pack $ idEncode $ _rName rt)]) $ "Redirecting..."
      Right (rt, Just _)  -> do
        webCommand $ S.checkRule rt pn gn
        seeOther (showRelURLParams (Menu Lib gn) [("ruleName", Just $ pack $ idEncode $ _rName rt), ("edit", Nothing)]) $ "Redirecting..."

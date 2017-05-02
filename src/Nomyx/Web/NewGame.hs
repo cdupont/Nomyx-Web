@@ -69,7 +69,7 @@ gamesPage gn = do
       h2 $ fromString "Create a new game:"
       blazeForm mf $ showRelURL SubmitNewGame
       H.br >> H.br
-      H.a "Current game debug infos" ! href (toValue $ showRelURL $ Menu Details gn)
+      H.a "Current game debug infos" ! href (toValue $ showRelURL $ GameMenu Details gn)
 
 newGamePost :: RoutedNomyxServer Response
 newGamePost = toResponse <$> do
@@ -103,6 +103,6 @@ viewGameName isAdmin mpn gi = do
    let isGameAdmin = isAdmin || maybe False (==mpn) (Just $ _ownedBy gi)
    let gn = _gameName g
    let canView = isGameAdmin || _isPublic gi
-   let link = showRelURL (Menu Home gn)
+   let link = showRelURL (GameMenu Home gn)
    when canView $ tr $ td $ H.a (fromString (gn ++ "   ")) ! (A.title $ toValue Help.view) ! href (toValue link)
 

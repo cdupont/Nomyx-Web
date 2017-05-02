@@ -51,7 +51,7 @@ viewIOs pn g = do
 
 viewIORule :: PlayerNumber -> Game -> RuleInfo -> RoutedNomyxServer Html
 viewIORule pn g r = do
-   let ruleLink = showRelURLParams (Menu Rules $ _gameName g) [("ruleNumber", Just $ pack $ show $ _rNumber r)]
+   let ruleLink = showRelURLParams (GameMenu Rules $ _gameName g) [("ruleNumber", Just $ pack $ show $ _rNumber r)]
    vior <- viewIORuleM pn (_rNumber r) g
    ok $ when (isJust vior) $ div ! A.id "IORule" $ do
       div ! A.id "IORuleTitle" $ h4 $ a (fromString $ "Rule " ++ (show $ _rNumber r) ++ " \"" ++ (_rName $ _rRuleTemplate r) ++ "\": ") ! (A.href $ toValue ruleLink)
@@ -103,7 +103,7 @@ viewOutput g o = if (s /= "") then Just (pre $ fromString s >> br) else Nothing 
 newInput' :: Input -> EventNumber -> GameName -> RoutedNomyxServer Response
 newInput' is en gn = do
   ws <- use webSession
-  let link = showRelURL $ Menu Actions gn
+  let link = showRelURL $ GameMenu Actions gn
   liftRouteT $ lift $ newInput is en ws (updateSession' gn) link
 
 updateSession' :: GameName -> TVar Session -> Input -> InputData -> EventNumber -> IO ()

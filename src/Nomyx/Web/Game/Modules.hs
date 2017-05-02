@@ -102,6 +102,6 @@ newModule gn = toResponse <$> do
   case r of
      Right modi -> do
        webCommand $ S.newModule pn modi
-       seeOther (showRelURLParams (Menu Modules gn) [("modulePath", Just $ pack $ idEncode $ _modPath modi)]) $ "Redirecting..."
+       seeOther (showRelURLParams (LibMenu Modules pn) [("modulePath", Just $ pack $ idEncode $ _modPath modi)]) $ "Redirecting..."
      _ -> error "cannot retrieve form data"
 
