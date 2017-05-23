@@ -107,7 +107,7 @@ delRuleTemplate gn rn = do
 
 viewRuleTemplate :: GameName -> RuleTemplateInfo -> Bool -> Bool -> RoutedNomyxServer Html
 viewRuleTemplate gn (RuleTemplateInfo rt@(RuleTemplate name desc code author picture _ decls) err) isGameAdmin isInGame = do
-  lf  <- liftRouteT $ lift $ viewForm "user" (submitRuleTemplatForm (Just rt) isGameAdmin)
+  lf  <- liftRouteT $ lift $ viewForm "user" (submitRuleTemplateForm (Just rt) isGameAdmin)
   ok $ div ! A.class_ "viewrule" $ do
     viewRuleHead name picture desc author
     viewRuleCode code
@@ -116,9 +116,9 @@ viewRuleTemplate gn (RuleTemplateInfo rt@(RuleTemplate name desc code author pic
     blazeForm lf $ defLink (SubmitRule gn) isInGame
 
 
-submitRuleTemplatForm :: (Maybe RuleTemplate) -> Bool -> NomyxForm (String, Maybe String)
-submitRuleTemplatForm mrt isGameAdmin = 
-   (,) <$> inputHidden (show mrt)
+submitRuleTemplateForm :: (Maybe RuleTemplate) -> Bool -> NomyxForm (String, Maybe String)
+submitRuleTemplateForm mrt isGameAdmin = 
+   (,) <$> RB.label "Submit this rule to the Constitution: " ++> inputHidden (show mrt)
        <*> if isGameAdmin then inputSubmit "Admin submit" else pure Nothing
 
 
@@ -136,7 +136,7 @@ submitRuleTemplatePost gn = toResponse <$> do
    s <- getSession
    let gi = getGameByName gn s
    admin <- isGameAdmin (fromJust gi)
-   r <- liftRouteT $ lift $ eitherForm environment "user" (submitRuleTemplatForm Nothing True)
+   r <- liftRouteT $ lift $ eitherForm environment "user" (submitRuleTemplateForm Nothing True)
    pn <- fromJust <$> getPlayerNumber
    rt <- case r of
       Right (srt, Nothing) -> do
