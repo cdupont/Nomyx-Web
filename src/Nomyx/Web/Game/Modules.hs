@@ -49,11 +49,20 @@ default (Integer, Double, Data.Text.Text)
 -- * Library display
 
 viewModules :: Library -> GameName -> Bool -> Bool -> RoutedNomyxServer Html
-viewModules (Library rts ms) gn isGameAdmin isInGame = do
-  ms <- mapM (viewPaneModule gn isGameAdmin isInGame) ms
+viewModules (Library _ ms) gn isGameAdmin isInGame = do
+  msv <- mapM (viewPaneModule gn isGameAdmin isInGame) ms
   ok $ do
-    div ! class_ "modules" $ sequence_ ms
+    div ! class_ "modulesList" $ viewModuleNames ms
+    div ! class_ "modules" $ sequence_ msv
 
+viewModuleNames :: [ModuleInfo] -> Html
+viewModuleNames mods = do
+  ul $ mapM_  viewModuleName mods
+
+viewModuleName :: ModuleInfo -> Html
+viewModuleName (ModuleInfo mp _) = li $ H.a (fromString $ mp) ! A.class_ "modulePath" ! (A.href $ toValue $ "?modulePath=" ++ (idEncode mp))
+
+  
 viewPaneModule :: GameName -> Bool -> Bool -> ModuleInfo -> RoutedNomyxServer Html
 viewPaneModule gn isGameAdmin isInGame modi = do
   com <- moduleCommands gn modi

@@ -195,10 +195,30 @@ h3{
    margin-top: 10px;
 }
 
+.modulesList {
+   position:absolute;
+   border-right: 1px solid black;
+   height: 100%;
+   width: 250px;
+   padding: 6px;
+   overflow: auto;
+}
+
+.modulesList ul {
+   padding-left: 20px;
+}
+
+#modulePath {
+   font-weight: bold;
+   margin-top: 15pt;
+}
+
 .module {
    position:relative;
    height: 100%;
+   left: 265px;
    padding: 10px;
+   width: 70%;
    display: none;
 }
 
