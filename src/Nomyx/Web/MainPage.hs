@@ -220,7 +220,10 @@ server ws set net docdir = mconcat [
     serveDirectory EnableBrowsing [] docdir,
     serveDirectory EnableBrowsing [] (_webDir set),
     serveDirectory EnableBrowsing [] (_sourceDir set),
-    do decodeBody (defaultBodyPolicy "/tmp/" 102400 4096 4096)
+    do decodeBody $ defaultBodyPolicy "/tmp/"  -- temporary directory for file uploads
+                                       102400  -- maximum bytes for files uploaded in this 'Request'
+                                       16384   -- maximum bytes for all non-file values in the 'Request' body
+                                       4096    -- maximum bytes of overhead for headers in @multipart/form-data@
        html <- implSite (pack $ nomyxURL net) "/Nomyx" (nomyxSite ws)
        return $ toResponse html]
 
